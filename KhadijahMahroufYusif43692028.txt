@@ -1,0 +1,349 @@
+Name: Khadijah Mahrouf Yusif
+ID number: 43692028
+Cohort: Cohort C
+
+
+CREATE DATABASE projectsschema;
+USE projectsschema;
+Database changed
+
+--------------------------------
+=====QUESTION 1=================
+--------------------------------
+
+CREATE TABLE EMPLOYEE (
+    -> EMPNO VARCHAR(10) PRIMARY KEY,
+    -> FNAME VARCHAR(30),
+    -> LNAME VARCHAR(40),
+    -> ADDRESS VARCHAR(20),
+    -> DOB DATE,
+    -> SEX CHAR(1), CONSTRAINT CHK_SEX CHECK ( SEX IN ('M', 'F')),
+    -> POSITION VARCHAR(20), CONSTRAINT CHK_POSITION CHECK (POSITION IN ('Manager', 'Team Leader', 'Analyst', 'Software Developer')),
+    -> DEPTNO VARCHAR(10));
+
+
+DESCRIBE EMPLOYEE;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| EMPNO    | varchar(10) | NO   | PRI | NULL    |       |
+| FNAME    | varchar(30) | YES  |     | NULL    |       |
+| LNAME    | varchar(40) | YES  |     | NULL    |       |
+| ADDRESS  | varchar(20) | YES  |     | NULL    |       |
+| DOB      | date        | YES  |     | NULL    |       |
+| SEX      | char(1)     | YES  |     | NULL    |       |
+| POSITION | varchar(20) | YES  |     | NULL    |       |
+| DEPTNO   | varchar(10) | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+
+CREATE TABLE DEPARTMENT (
+    -> DEPTNO VARCHAR(10),
+    -> DEPTNAME VARCHAR(30),
+    -> MGREMPNO VARCHAR(10),
+    -> PRIMARY KEY (DEPTNO),
+    -> FOREIGN KEY (MGREMPNO) REFERENCES EMPLOYEE(EMPNO)
+    -> );
+
+DESCRIBE DEPARTMENT;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| DEPTNO   | varchar(10) | NO   | PRI | NULL    |       |
+| DEPTNAME | varchar(30) | YES  |     | NULL    |       |
+| MGREMPNO | varchar(10) | YES  | MUL | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+
+
+CREATE TABLE PROJECT (
+    -> PROJNO VARCHAR(10),
+    -> PROJNAME VARCHAR(30),
+    -> DEPTNO VARCHAR(10),
+    -> PRIMARY KEY(PROJNO),
+    -> FOREIGN KEY (DEPTNO) REFERENCES DEPARTMENT(DEPTNO)
+    -> );
+
+DESCRIBE PROJECT;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| PROJNO   | varchar(10) | NO   | PRI | NULL    |       |
+| PROJNAME | varchar(30) | YES  |     | NULL    |       |
+| DEPTNO   | varchar(10) | YES  | MUL | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+
+
+CREATE TABLE WORKSON (
+    -> EMPNO VARCHAR(10),
+    -> PROJNO VARCHAR(10),
+    -> DATEWORKED DATE,
+    -> HOURSWORKED INT,
+    -> PRIMARY KEY (EMPNO, PROJNO, DATEWORKED),
+    -> FOREIGN KEY (PROJNO) REFERENCES PROJECT(PROJNO),
+    -> FOREIGN KEY (EMPNO) REFERENCES EMPLOYEE(EMPNO),
+    -> CONSTRAINT CHK_HOURS CHECK (HOURSWORKED BETWEEN 0 AND 40)
+    -> );
+
+DESCRIBE WORKSON;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| EMPNO       | varchar(10) | NO   | PRI | NULL    |       |
+| PROJNO      | varchar(10) | NO   | PRI | NULL    |       |
+| DATEWORKED  | date        | NO   | PRI | NULL    |       |
+| HOURSWORKED | int(11)     | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+
+ALTER TABLE EMPLOYEE
+    -> ADD FOREIGN KEY (DEPTNO) REFERENCES DEPARTMENT(DEPTNO);
+
+
+DESCRIBE EMPLOYEE;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| EMPNO    | varchar(10) | NO   | PRI | NULL    |       |
+| FNAME    | varchar(30) | YES  |     | NULL    |       |
+| LNAME    | varchar(40) | YES  |     | NULL    |       |
+| ADDRESS  | varchar(20) | YES  |     | NULL    |       |
+| DOB      | date        | YES  |     | NULL    |       |
+| SEX      | char(1)     | YES  |     | NULL    |       |
+| POSITION | varchar(20) | YES  |     | NULL    |       |
+| DEPTNO   | varchar(10) | YES  | MUL | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+
+
+INSERT INTO EMPLOYEE (EMPNO, FNAME, LNAME, ADDRESS, DOB, SEX, POSITION, DEPTNO) VALUES
+    -> ('E1', 'John', 'Smith', '12 Main St', '1985-03-12', 'M', 'Manager', NULL),
+    -> ('E2', 'Mary', 'Jones', '45 Oak Ave', '1990-07-22', 'F', 'Manager', NULL),
+    -> ('E3', 'David', 'Brown', '8 Elm Rd', '1992-11-05', 'M', 'Analyst', NULL),
+    -> ('E4', 'Sarah', 'Davis', '21 Pine St', '1995-01-18', 'F', 'Software Developer', NULL),
+    -> ('E5', 'Janice', 'Wilson', '3 Birch Ln', '1991-09-30', 'F', 'Team Leader', NULL)
+    ;
+
+SELECT * FROM EMPLOYEE;
++-------+--------+--------+------------+------------+------+--------------------+--------+
+| EMPNO | FNAME  | LNAME  | ADDRESS    | DOB        | SEX  | POSITION           | DEPTNO |
++-------+--------+--------+------------+------------+------+--------------------+--------+
+| E1    | John   | Smith  | 12 Main St | 1985-03-12 | M    | Manager            | D2     |
+| E2    | Mary   | Jones  | 45 Oak Ave | 1990-07-22 | F    | Manager            | D1     |
+| E3    | David  | Brown  | 8 Elm Rd   | 1992-11-05 | M    | Analyst            | D2     |
+| E4    | Sarah  | Davis  | 21 Pine St | 1995-01-18 | F    | Software Developer | D1     |
+| E5    | Janice | Wilson | 3 Birch Ln | 1991-09-30 | F    | Team Leader        | D2     |
++-------+--------+--------+------------+------------+------+--------------------+--------+
+
+
+INSERT INTO DEPARTMENT (DEPTNO, DEPTNAME, MGREMPNO) VALUES
+    -> ('D1', 'IT', 'E2'),
+    -> ('D2', 'Planning', 'E1')
+    ;
+
+SELECT * FROM DEPARTMENT;
++--------+----------+----------+
+| DEPTNO | DEPTNAME | MGREMPNO |
++--------+----------+----------+
+| D1     | IT       | E2       |
+| D2     | Planning | E1       |
++--------+----------+----------+
+
+UPDATE EMPLOYEE SET DEPTNO = 'D1' WHERE EMPNO IN ('E2','E4');
+UPDATE EMPLOYEE SET DEPTNO = 'D2' WHERE EMPNO IN ('E1','E3','E5');
+
+
+SELECT * FROM EMPLOYEE;
++-------+--------+--------+------------+------------+------+--------------------+--------+
+| EMPNO | FNAME  | LNAME  | ADDRESS    | DOB        | SEX  | POSITION           | DEPTNO |
++-------+--------+--------+------------+------------+------+--------------------+--------+
+| E1    | John   | Smith  | 12 Main St | 1985-03-12 | M    | Manager            | D2     |
+| E2    | Mary   | Jones  | 45 Oak Ave | 1990-07-22 | F    | Manager            | D1     |
+| E3    | David  | Brown  | 8 Elm Rd   | 1992-11-05 | M    | Analyst            | D2     |
+| E4    | Sarah  | Davis  | 21 Pine St | 1995-01-18 | F    | Software Developer | D1     |
+| E5    | Janice | Wilson | 3 Birch Ln | 1991-09-30 | F    | Team Leader        | D2     |
++-------+--------+--------+------------+------------+------+--------------------+--------+
+
+
+INSERT INTO PROJECT (PROJNO, PROJNAME, DEPTNAME) VALUES
+    -> ('P1', 'SCCS', 'D1'),
+    -> ('P2', 'Website Redesign', 'D1'),
+    -> ('P3', 'Resource Planning', 'D2')
+    ;
+
+SELECT * FROM PROJECT;
++--------+-------------------+--------+
+| PROJNO | PROJNAME          | DEPTNO |
++--------+-------------------+--------+
+| P1     | SCCS              | D1     |
+| P2     | Website Redesign  | D1     |
+| P3     | Resource Planning | D2     |
++--------+-------------------+--------+
+
+INSERT INTO WORKSON (EMPNO, PROJNO, DATEWORKED, HOURSWORKED) VALUES
+    -> ('E2', 'P1', '2024-01-10', 35),
+    -> ('E4', 'P1', '2024-01-10', 20),
+    -> ('E4', 'P2', '2024-01-11', 15),
+    -> ('E1', 'P3', '2024-01-12', 40),
+    -> ('E3', 'P3', '2024-01-12', 30),
+    -> ('E5', 'P3', '2024-01-13', 25)
+    ;
+
+SELECT * FROM WORKSON;
++-------+--------+------------+-------------+
+| EMPNO | PROJNO | DATEWORKED | HOURSWORKED |
++-------+--------+------------+-------------+
+| E1    | P3     | 2024-01-12 |          40 |
+| E2    | P1     | 2024-01-10 |          35 |
+| E3    | P3     | 2024-01-12 |          30 |
+| E4    | P1     | 2024-01-10 |          20 |
+| E4    | P2     | 2024-01-11 |          15 |
+| E5    | P3     | 2024-01-13 |          25 |
++-------+--------+------------+-------------+
+
+
+
+--------------------------------
+=====QUESTION 7.25==============
+--------------------------------
+
+CREATE VIEW FemaleManagerLeadProjects AS
+    -> SELECT p.PROJNO, p.PROJNAME
+    -> FROM PROJECT p, DEPARTMENT d, EMPLOYEE e
+    -> WHERE p.DEPTNO = d.DEPTNO
+    -> AND d.MGREMPNO = e.EMPNO
+    -> AND e.SEX = 'F'
+    -> ORDER BY PROJNO
+    ;
+
+SELECT * FROM FemaleManagerLeadProjects;
++--------+------------------+
+| PROJNO | PROJNAME         |
++--------+------------------+
+| P1     | SCCS             |
+| P2     | Website Redesign |
++--------+------------------+
+
+
+------------------------------------
+======QUESTION 7.26=================
+------------------------------------
+
+CREATE VIEW EmployeeProjectDetails AS
+    -> SELECT e.EMPNO, e.FNAME, e.LNAME, p.PROJNAME, w.HOURSWORKED
+    -> FROM EMPLOYEE e, PROJECT p, WORKSON w
+    -> WHERE w.EMPNO = e.EMPNO
+    -> AND w.PROJNO = p.PROJNO
+    -> ;
+
+SELECT * FROM EmployeeProjectDetails;
++-------+--------+--------+-------------------+-------------+
+| EMPNO | FNAME  | LNAME  | PROJNAME          | HOURSWORKED |
++-------+--------+--------+-------------------+-------------+
+| E2    | Mary   | Jones  | SCCS              |          35 |
+| E4    | Sarah  | Davis  | SCCS              |          20 |
+| E4    | Sarah  | Davis  | Website Redesign  |          15 |
+| E1    | John   | Smith  | Resource Planning |          40 |
+| E3    | David  | Brown  | Resource Planning |          30 |
+| E5    | Janice | Wilson | Resource Planning |          25 |
++-------+--------+--------+-------------------+-------------+
+
+
+--------------------------------------
+========QUESTION 7.27=================
+--------------------------------------
+=== A ===
+---------
+
+CREATE VIEW EmpProject(empNo, projNo, totalHours)
+    -> AS SELECT w.EMPNO, w.PROJNO, SUM(HOURSWORKED)
+    -> FROM EMPLOYEE e, PROJECT p, WORKSON w
+    -> WHERE e.EMPNO = w.EMPNO AND p.PROJNO = w.PROJNO
+    -> GROUP BY w.EMPNO, w.PROJNO
+    -> ;
+
+SELECT * FROM EmpProject;
++-------+--------+------------+
+| empNo | projNo | totalHours |
++-------+--------+------------+
+| E1    | P3     |         40 |
+| E2    | P1     |         35 |
+| E3    | P3     |         30 |
+| E4    | P1     |         20 |
+| E4    | P2     |         15 |
+| E5    | P3     |         25 |
++-------+--------+------------+
+
+---------
+=== B ===
+---------
+EMPTY SET SHOWN
+
+EmpProject Only stores values like P1, P2, P3 which are the project numbers and not project names like 'SCCS'
+
+
+---------
+=== c ===
+---------
+
+SELECT COUNT(PROJNO) FROM EmpProject WHERE EMPNO = 'E1';
++---------------+
+| COUNT(PROJNO) |
++---------------+
+|             1 |
++---------------+
+
+---------
+=== D ===
+---------
+
+SELECT EMPNO, totalHours FROM EmpProject GROUP BY EMPNO;
++-------+------------+
+| EMPNO | totalHours |
++-------+------------+
+| E1    |         40 |
+| E2    |         35 |
+| E3    |         30 |
+| E4    |         20 |
+| E5    |         25 |
++-------+------------+
+
+IMPORTANT NOTICE ABOUT THIS QUERY
+E4 HAS TWO ROWS IN EmpProject WHICH ARE;
+1. P1 = 20
+2. P2 = 15
+BUT GROUPING BY EMPNO ALONE COLLAPSES OR COMBINES THEM AND MARIA-DB AUTOMATICALLY PICKS
+ONE VALUE i.e. 20 FOR THE totalHours INSTEAD OF ADDING THEM BOTH, MAKING THIS RESULT A 
+MISLEADING ONE. THOUGH THE QUERY RUNS WITHOUT ANY ERRORS THE totalHoursISNT A MEANINGFUL 
+VALUE.
+
+
+
+
+---------------------------------
+=======QUESTION 7.28=============
+---------------------------------
+
+THE VIEW STORES DISTINCT PART NUMBERS WITH ANY OF THEIR CONTACT COST BEING OVER 1000(POUNDS)
+MAINTENANCE FOR SUCH A VIEW IS TRICKY MAINLY BECAUSE EVEN IF WE DELETE OR UPDATE AN EXPENSIVE ROW,
+IT DOESNT MEAN THE PART IS AUTOMATICALLY REMOVED, THE OTHER CONTRACTS MIGHT STILL KEEP IT.
+
+BASE TABLE ACCESS IS NOT NEEDED IN THESE INSTANCES
+1. INSERTION OF AN EXPENSIVE ROW , YOU CAN JUST ADD PARTNO
+2. UPDATING A CHEAP ROW TO AN EXPENSIVE ONE, YOU CAN ALSO JUST ADD PARTNO
+
+THIS IS POSSIBLE BECAUSE THERES NO NEED FOR THE OPERATIONS TO CHECK IF OTHER ROWS EXIST
+
+BASE TABLE ACCESS IS NEEDED IN THESE INSTANCES
+1. THE DELETION OF AN EXPENSIVE ROW
+2. UPDATING OF AN EXPENSIVE ROW TO A CHEAP ONE
+
+THIS IS BECAUSE IT MUST CHECK IF ANY OTHER ROW FOR THAT PARTNO STILL HAS A COST OF OVER 1000(POUNDS), 
+BASICALLY IT NEEDS TO QUERY THE BASE TABLE
+
+
+WE CAN AVOID BASE TABLE ACCESS BY:
+1. STORING AGGREGATE COUNTS IN THE VIEW INSTEAD OF JUST THE DISTINCT PART NUMBERS
+2. AND THEN MAINTAIN THE VIEW BY INCREMENTING OR DECREMENTING COUNTS USING ONLY THE 
+CHANGED ROW WHICH REQUIRES NO BASE TABLE READING
+
+IN CONCLUSION
+BASE TABLE IS AVOIDABLE FOR INSERTS AND COST INCRESEAS
+BUT NOT FOR DELETES OR COST DECREASES, UNLESS THERE ARE ADDITIONAL METADAT STORED IN THE MATERIALISED 
+VIEW ITSELF.
